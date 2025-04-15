@@ -11,10 +11,10 @@ To run this script, you need Python 3.6 or later and the following Python packag
 - json (part of Python standard library)
 - logging (part of Python standard library)
 
-You can install the required packages using pip:
+You can install the required packages using the provided `requirements.txt` file:
 
 ```
-pip install boto3 python-dotenv
+pip install -r requirements.txt
 ```
 
 ## Configuration
