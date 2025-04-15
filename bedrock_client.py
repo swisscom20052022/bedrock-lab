@@ -1,13 +1,19 @@
 import boto3
 import json
 import logging
+import os
 from botocore.exceptions import ClientError
+from dotenv import load_dotenv
+
+load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class BedrockClient:
-    def __init__(self, profile_name='954753067569', region_name='eu-central-2'):
+    def __init__(self):
+        profile_name = os.getenv('AWS_PROFILE_NAME')
+        region_name = os.getenv('AWS_REGION_NAME')
         session = boto3.Session(profile_name=profile_name, region_name=region_name)
         self.bedrock_client = session.client(service_name="bedrock")
         self.bedrock_runtime = session.client(service_name="bedrock-runtime")
@@ -41,7 +47,7 @@ class BedrockClient:
             logger.error(f"Couldn't get foundation model details for {model_identifier}")
             raise
 
-    def invoke_bedrock_model(self, prompt, model_id="anthropic.claude-3-5-sonnet-20240620-v1:0", max_tokens=8192, temperature=0.5):
+    def invoke_bedrock_model(self, prompt, model_id=None, max_tokens=8192, temperature=0.5):
         """
         Invokes an Amazon Bedrock model and returns the generated text.
 
@@ -64,6 +70,7 @@ class BedrockClient:
                 "temperature": temperature
             }
 
+            model_id = model_id or os.getenv('BEDROCK_MODEL_ID')
             response = self.bedrock_runtime.invoke_model(
                 body=json.dumps(payload),
                 modelId=model_id,
