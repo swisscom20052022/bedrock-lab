@@ -18,6 +18,18 @@ class BedrockClient:
         session = boto3.Session(profile_name=profile_name, region_name=region_name)
         self.bedrock_client = session.client(service_name="bedrock")
         self.bedrock_runtime = session.client(service_name="bedrock-runtime")
+        self.tokens_in = 0
+        self.tokens_out = 0
+        self.context_window = 0
+        self.api_cost = 0
+
+    def calculate_tokens(self, text):
+        # This is a simple approximation. For accurate token count, use the model's tokenizer.
+        return len(text.split())
+
+    def calculate_cost(self, tokens_in, tokens_out):
+        # This is an example cost calculation. Adjust based on actual AWS Bedrock pricing.
+        return (tokens_in * 0.00001 + tokens_out * 0.00003) / 1000
 
     def list_foundation_models(self):
         """
@@ -50,13 +62,13 @@ class BedrockClient:
 
     def invoke_bedrock_model(self, prompt, model_id=None, max_tokens=8192, temperature=0.5):
         """
-        Invokes an Amazon Bedrock model and returns the generated text.
+        Invokes an Amazon Bedrock model and returns the generated text along with usage statistics.
 
         :param prompt: The input prompt for the model
         :param model_id: The ID of the model to use (default: anthropic.claude-3-5-sonnet-20240620-v1:0)
         :param max_tokens: Maximum number of tokens to generate (default: 8192)
         :param temperature: Temperature for text generation (default: 0.5)
-        :return: Generated text from the model
+        :return: Tuple containing generated text and usage statistics
         """
         try:
             payload = {
@@ -80,12 +92,38 @@ class BedrockClient:
             )
 
             response_body = json.loads(response['body'].read())
-            return response_body['content'][0]['text'].strip()
+            generated_text = response_body['content'][0]['text'].strip()
+
+            self.tokens_in = self.calculate_tokens(prompt)
+            self.tokens_out = self.calculate_tokens(generated_text)
+            self.context_window = self.tokens_in + self.tokens_out
+            self.api_cost = self.calculate_cost(self.tokens_in, self.tokens_out)
+
+            return generated_text, {
+                "tokens_in": self.tokens_in,
+                "tokens_out": self.tokens_out,
+                "context_window": self.context_window,
+                "api_cost": self.api_cost
+            }
         except ClientError as e:
             logger.error(f"An error occurred: {e}")
-            return None
+            return None, None
 
 def main():
+    """
+    Main function to demonstrate the usage of BedrockClient.
+
+    Usage:
+    1. To use a custom prompt:
+       python bedrock_client.py "Your custom prompt here"
+
+    2. To use the default prompt:
+       python bedrock_client.py
+
+    The script will invoke the Bedrock model with the provided prompt
+    (or the default prompt if none is given), display the generated text,
+    and then list the available models.
+    """
     bedrock = BedrockClient()
 
     # Get prompt from command line argument or use default
@@ -94,9 +132,14 @@ def main():
     # Invoke the model
     print("\nInvoking model with prompt:", prompt)
     try:
-        result = bedrock.invoke_bedrock_model(prompt)
+        result, usage_stats = bedrock.invoke_bedrock_model(prompt)
         if result:
             print("Generated text:", result)
+            print("\nUsage Statistics:")
+            print(f"Tokens In: {usage_stats['tokens_in']}")
+            print(f"Tokens Out: {usage_stats['tokens_out']}")
+            print(f"Context Window: {usage_stats['context_window']} / 200,000")
+            print(f"API Cost: ${usage_stats['api_cost']:.4f}")
         else:
             print("No text generated.")
     except Exception as e:
