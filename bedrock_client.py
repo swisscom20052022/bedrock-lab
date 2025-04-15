@@ -27,9 +27,19 @@ class BedrockClient:
         # This is a simple approximation. For accurate token count, use the model's tokenizer.
         return len(text.split())
 
-    def calculate_cost(self, tokens_in, tokens_out):
-        # This is an example cost calculation. Adjust based on actual AWS Bedrock pricing.
-        return (tokens_in * 0.00001 + tokens_out * 0.00003) / 1000
+    def calculate_cost(self, tokens_in, tokens_out, model_id):
+        # Fetch actual pricing information from AWS API or use a predefined pricing dictionary
+        # This is a placeholder. Replace with actual API call or up-to-date pricing information
+        pricing = {
+            "anthropic.claude-v2": {"input": 0.00001102, "output": 0.00003268},
+            "anthropic.claude-v1": {"input": 0.00001102, "output": 0.00003268},
+            "anthropic.claude-instant-v1": {"input": 0.00000163, "output": 0.00000551},
+            "ai21.j2-mid-v1": {"input": 0.00001, "output": 0.00002},
+            "ai21.j2-ultra-v1": {"input": 0.00003, "output": 0.00006},
+        }
+        
+        model_pricing = pricing.get(model_id, {"input": 0.00001, "output": 0.00003})  # Default pricing if model not found
+        return (tokens_in * model_pricing["input"] + tokens_out * model_pricing["output"]) / 1000
 
     def list_foundation_models(self):
         """
@@ -65,7 +75,7 @@ class BedrockClient:
         Invokes an Amazon Bedrock model and returns the generated text along with usage statistics.
 
         :param prompt: The input prompt for the model
-        :param model_id: The ID of the model to use (default: anthropic.claude-3-5-sonnet-20240620-v1:0)
+        :param model_id: The ID of the model to use (default: anthropic.claude-v2)
         :param max_tokens: Maximum number of tokens to generate (default: 8192)
         :param temperature: Temperature for text generation (default: 0.5)
         :return: Tuple containing generated text and usage statistics
@@ -83,7 +93,7 @@ class BedrockClient:
                 "temperature": temperature
             }
 
-            model_id = model_id or os.getenv('BEDROCK_MODEL_ID')
+            model_id = model_id or os.getenv('BEDROCK_MODEL_ID', 'anthropic.claude-v2')
             response = self.bedrock_runtime.invoke_model(
                 body=json.dumps(payload),
                 modelId=model_id,
@@ -97,7 +107,7 @@ class BedrockClient:
             self.tokens_in = self.calculate_tokens(prompt)
             self.tokens_out = self.calculate_tokens(generated_text)
             self.context_window = self.tokens_in + self.tokens_out
-            self.api_cost = self.calculate_cost(self.tokens_in, self.tokens_out)
+            self.api_cost = self.calculate_cost(self.tokens_in, self.tokens_out, model_id)
 
             return generated_text, {
                 "tokens_in": self.tokens_in,
@@ -109,43 +119,23 @@ class BedrockClient:
             logger.error(f"An error occurred: {e}")
             return None, None
 
-def main():
-    """
-    Main function to demonstrate the usage of BedrockClient.
-
-    Usage:
-    1. To use a custom prompt:
-       python bedrock_client.py "Your custom prompt here"
-
-    2. To use the default prompt:
-       python bedrock_client.py
-
-    The script will invoke the Bedrock model with the provided prompt
-    (or the default prompt if none is given), display the generated text,
-    and then list the available models.
-    """
-    bedrock = BedrockClient()
-
-    # Get prompt from command line argument or use default
-    prompt = sys.argv[1] if len(sys.argv) > 1 else "What's the capital of France?"
-    
-    # Invoke the model
-    print("\nInvoking model with prompt:", prompt)
+def invoke_model(bedrock, prompt, model_id=None):
+    print(f"\nInvoking model with prompt: {prompt}")
     try:
-        result, usage_stats = bedrock.invoke_bedrock_model(prompt)
+        result, usage_stats = bedrock.invoke_bedrock_model(prompt, model_id)
         if result:
             print("Generated text:", result)
             print("\nUsage Statistics:")
             print(f"Tokens In: {usage_stats['tokens_in']}")
             print(f"Tokens Out: {usage_stats['tokens_out']}")
             print(f"Context Window: {usage_stats['context_window']} / 200,000")
-            print(f"API Cost: ${usage_stats['api_cost']:.4f}")
+            print(f"API Cost: ${usage_stats['api_cost']:.6f}")
         else:
             print("No text generated.")
     except Exception as e:
         print(f"Error invoking model: {e}")
 
-    # List available models
+def list_models(bedrock):
     print("\nListing available models:")
     try:
         models = bedrock.list_foundation_models()
@@ -154,14 +144,36 @@ def main():
     except Exception as e:
         print(f"Error listing models: {e}")
 
-    # Uncomment this block if you want to get model details
-    # try:
-    #     model_id = "anthropic.claude-3-5-sonnet-20240620-v1:0"
-    #     model_details = bedrock.get_foundation_model(model_id)
-    #     print(f"\nDetails for model {model_id}:")
-    #     print(json.dumps(model_details, indent=2))
-    # except Exception as e:
-    #     print(f"Error getting model details: {e}")
+def main():
+    """
+    Main function to demonstrate the usage of BedrockClient.
+
+    Usage:
+    1. To invoke a model with a custom prompt:
+       python bedrock_client.py invoke "Your custom prompt here" [optional_model_id]
+
+    2. To list available models:
+       python bedrock_client.py list
+
+    3. To use the default prompt:
+       python bedrock_client.py
+
+    The script will perform the specified action based on the command-line arguments.
+    """
+    bedrock = BedrockClient()
+
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "invoke":
+            prompt = sys.argv[2] if len(sys.argv) > 2 else "What's the capital of France?"
+            model_id = sys.argv[3] if len(sys.argv) > 3 else None
+            invoke_model(bedrock, prompt, model_id)
+        elif sys.argv[1] == "list":
+            list_models(bedrock)
+        else:
+            print("Invalid command. Use 'invoke' or 'list'.")
+    else:
+        # Default behavior: invoke with default prompt
+        invoke_model(bedrock, "What's the capital of France?")
 
 if __name__ == "__main__":
     main()

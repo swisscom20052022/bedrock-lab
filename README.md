@@ -42,23 +42,61 @@ Make sure you have AWS credentials configured with the necessary permissions to 
 ## Usage
 
 1. Ensure you have the required packages installed and AWS credentials configured.
-2. Run the script using Python:
+2. Run the script using Python with the following options:
 
-You can now use the script as follows:
+   a. To invoke a model with a custom prompt:
+   ```
+   python bedrock_client.py invoke "Your custom prompt here" [optional_model_id]
+   ```
+   This will generate a response based on your prompt and display:
+   - The generated text
+   - Token count (input and output)
+   - Context window usage
+   - Estimated API cost
 
-To use a custom prompt:
+   b. To list available models:
+   ```
+   python bedrock_client.py list
+   ```
+   This will display all available foundation models in Amazon Bedrock, including their IDs and names.
 
-```
-python bedrock_client.py "Your custom prompt here"
-```
+   c. To use the default prompt:
+   ```
+   python bedrock_client.py
+   ```
+   This will use the default prompt "What's the capital of France?" and display the same information as option (a).
 
-To use the default prompt:
+## Output
 
-```
-python bedrock_client.py
-```
+When invoking a model, the script will display:
 
-The script will invoke the Bedrock model with the provided prompt (or the default prompt if none is given), display the generated text, and then list the available models.
+1. The input prompt
+2. The generated text from the model
+3. Usage statistics:
+   - Tokens In: Number of tokens in the input prompt
+   - Tokens Out: Number of tokens in the generated response
+   - Context Window: Total tokens used (in + out) out of the maximum 200,000
+   - API Cost: Estimated cost of the API call in USD
+
+## API Cost Calculation
+
+The script includes an estimated API cost calculation based on token usage. This calculation uses a predefined pricing dictionary for different models. Please note:
+
+1. The pricing is an approximation and may not reflect the exact current pricing from AWS.
+2. The pricing information is stored in a dictionary within the `calculate_cost` method of the `BedrockClient` class.
+3. To get the most accurate pricing:
+   - Regularly update the pricing information in the `calculate_cost` method.
+   - Consider implementing a method to fetch real-time pricing from AWS.
+
+Current pricing used in the script (per 1000 tokens):
+
+- anthropic.claude-v2: $0.01102 (input), $0.03268 (output)
+- anthropic.claude-v1: $0.01102 (input), $0.03268 (output)
+- anthropic.claude-instant-v1: $0.00163 (input), $0.00551 (output)
+- ai21.j2-mid-v1: $0.01 (input), $0.02 (output)
+- ai21.j2-ultra-v1: $0.03 (input), $0.06 (output)
+
+For unlisted models, a default pricing of $0.01 (input) and $0.03 (output) per 1000 tokens is used.
 
 ## Script Overview
 
