@@ -2,6 +2,7 @@ import boto3
 import json
 import logging
 import os
+import sys
 from botocore.exceptions import ClientError
 from dotenv import load_dotenv
 
@@ -87,18 +88,11 @@ class BedrockClient:
 def main():
     bedrock = BedrockClient()
 
-    # List available models
-    print("Listing available models:")
-    try:
-        models = bedrock.list_foundation_models()
-        for model in models:
-            print(f"- {model['modelId']}: {model['modelName']}")
-    except Exception as e:
-        print(f"Error listing models: {e}")
-
+    # Get prompt from command line argument or use default
+    prompt = sys.argv[1] if len(sys.argv) > 1 else "What's the capital of France?"
+    
     # Invoke the model
-    print("\nInvoking model:")
-    prompt = "\n\nHuman: What's the capital of France?\n\nAssistant:"
+    print("\nInvoking model with prompt:", prompt)
     try:
         result = bedrock.invoke_bedrock_model(prompt)
         if result:
@@ -107,6 +101,15 @@ def main():
             print("No text generated.")
     except Exception as e:
         print(f"Error invoking model: {e}")
+
+    # List available models
+    print("\nListing available models:")
+    try:
+        models = bedrock.list_foundation_models()
+        for model in models:
+            print(f"- {model['modelId']}: {model['modelName']}")
+    except Exception as e:
+        print(f"Error listing models: {e}")
 
     # Uncomment this block if you want to get model details
     # try:

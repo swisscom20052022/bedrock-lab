@@ -44,11 +44,21 @@ Make sure you have AWS credentials configured with the necessary permissions to 
 1. Ensure you have the required packages installed and AWS credentials configured.
 2. Run the script using Python:
 
+You can now use the script as follows:
+
+To use a custom prompt:
+
+```
+python bedrock_client.py "Your custom prompt here"
+```
+
+To use the default prompt:
+
 ```
 python bedrock_client.py
 ```
 
-The script will list available foundation models and attempt to invoke a model with a sample prompt.
+The script will invoke the Bedrock model with the provided prompt (or the default prompt if none is given), display the generated text, and then list the available models.
 
 ## Script Overview
 
