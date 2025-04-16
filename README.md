@@ -99,6 +99,13 @@ To get the most up-to-date list of available models, run:
 python bedrock_client.py list
 ```
 
+## Model Comparison
+
+| Model | Input Token Price (per 1K) | Output Token Price (per 1K) | Input Token Price (per 1M) | Output Token Price (per 1M) | Context Window | Key Features |
+|-------|----------------------------|----------------------------|---------------------------|---------------------------|----------------|--------------|
+| Claude 3 Haiku | $0.00025 | $0.00125 | $0.25 | $1.25 | 200k tokens | • Fastest and most compact model<br>• Optimized for low-latency, high-throughput use cases<br>• Ideal for cost-sensitive workloads |
+| Claude 3.5 Sonnet | $0.003 (1200%) | $0.015 (1200%) | $3.00 (1200%) | $15.00 (1200%) | 200k tokens | • Anthropic's most intelligent model (as of April 2025)<br>• Delivers Claude 3 Opus-level intelligence at one-fifth the cost<br>• Ideal for complex, context-sensitive applications<br>• Supports batch inference and latency-optimized options |
+
 ## API Cost Calculation
 
 The script includes an estimated API cost calculation based on token usage. This calculation uses a predefined pricing dictionary for different models. Please note:
