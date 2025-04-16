@@ -176,3 +176,59 @@ Recommendations:
 - Consider Claude 3.5 Sonnet for tasks that may benefit from more detailed responses.
 - For cost-sensitive applications with short prompts, either model is suitable.
 - Further testing with longer, more complex prompts is recommended to evaluate response quality and accuracy.
+
+## Detailed Cost Comparison Results
+
+A more detailed cost comparison test was conducted between Claude 3 Haiku and Claude 3.5 Sonnet models using prompts of varying lengths. Here are the results:
+
+```
++---------------+------------+-------------+--------------+--------+---------+----------+
+| Prompt Type   |   haiku In |   haiku Out |   haiku Cost |   5 In |   5 Out |   5 Cost |
++===============+============+=============+==============+========+=========+==========+
+| Short         |          7 |          14 |    1.925e-05 |      7 |      80 | 0.001221 |
++---------------+------------+-------------+--------------+--------+---------+----------+
+| Medium        |         55 |          83 |    0.0001175 |     55 |      43 | 0.00081  |
++---------------+------------+-------------+--------------+--------+---------+----------+
+| Long          |         24 |         476 |    0.000601  |     24 |     742 | 0.011202 |
++---------------+------------+-------------+--------------+--------+---------+----------+
+| Very Long     |       1007 |         131 |    0.0004155 |   1007 |     147 | 0.005226 |
++---------------+------------+-------------+--------------+--------+---------+----------+
+```
+
+### Analysis of Results
+
+1. Short Prompts:
+   - Haiku: 7 tokens in, 14 tokens out, cost $0.00001925
+   - Sonnet: 7 tokens in, 80 tokens out, cost $0.001221
+   - Sonnet is about 63 times more expensive for short prompts.
+
+2. Medium Prompts:
+   - Haiku: 55 tokens in, 83 tokens out, cost $0.0001175
+   - Sonnet: 55 tokens in, 43 tokens out, cost $0.00081
+   - Sonnet is about 6.9 times more expensive for medium prompts.
+
+3. Long Prompts:
+   - Haiku: 24 tokens in, 476 tokens out, cost $0.000601
+   - Sonnet: 24 tokens in, 742 tokens out, cost $0.011202
+   - Sonnet is about 18.6 times more expensive for long prompts.
+
+4. Very Long Prompts:
+   - Haiku: 1007 tokens in, 131 tokens out, cost $0.0004155
+   - Sonnet: 1007 tokens in, 147 tokens out, cost $0.005226
+   - Sonnet is about 12.6 times more expensive for very long prompts.
+
+### Key Observations
+
+1. Claude-3-Sonnet is consistently more expensive across all prompt types.
+2. The cost difference is most pronounced for short prompts, where Sonnet is 63 times more expensive.
+3. For medium to very long prompts, Sonnet is roughly 7 to 19 times more expensive than Haiku.
+4. Sonnet tends to generate more tokens in output for the same input, especially for shorter prompts.
+
+### Recommendations
+
+1. For cost-sensitive applications, especially those dealing with shorter prompts, Claude 3 Haiku is significantly more economical.
+2. If the advanced capabilities of Sonnet are not critical for the task, using Haiku could lead to substantial cost savings.
+3. For applications requiring more detailed or nuanced responses, the higher cost of Sonnet may be justified by its potentially superior output quality.
+4. Consider the specific requirements of your use case when choosing between these models, balancing cost efficiency with output quality and complexity.
+
+This cost comparison provides valuable insights for decision-making when selecting between Claude 3 Haiku and Claude 3.5 Sonnet models. The choice between them should be based on the specific needs of the task, considering factors such as budget constraints, required response quality, and the complexity of the prompts being used.
