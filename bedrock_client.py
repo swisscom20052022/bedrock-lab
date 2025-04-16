@@ -37,6 +37,8 @@ class BedrockClient:
             "anthropic.claude-instant-v1": {"input": 0.00000163, "output": 0.00000551},
             "ai21.j2-mid-v1": {"input": 0.00001, "output": 0.00002},
             "ai21.j2-ultra-v1": {"input": 0.00003, "output": 0.00006},
+            "anthropic.claude-3-haiku-20240307-v1:0": {"input": 0.00025, "output": 0.00125},
+            "anthropic.claude-3-5-sonnet-20240620-v1:0": {"input": 0.003, "output": 0.015},
         }
         
         model_pricing = pricing.get(model_id, {"input": 0.00001, "output": 0.00003})  # Default pricing if model not found
