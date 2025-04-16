@@ -75,8 +75,29 @@ When invoking a model, the script will display:
 3. Usage statistics:
    - Tokens In: Number of tokens in the input prompt
    - Tokens Out: Number of tokens in the generated response
+   - Total Tokens: Sum of input and output tokens
    - Context Window: Total tokens used (in + out) out of the maximum 200,000
    - API Cost: Estimated cost of the API call in USD
+4. Speed Insights:
+   - Total Inference Time: Time taken for the entire process in seconds
+   - Tokens per Second: Overall processing speed (input + output)
+   - Input Tokens per Second: Speed of processing input tokens
+   - Output Tokens per Second: Speed of generating output tokens
+
+## Available Models
+
+As of the last update, the following models are available:
+
+- amazon.titan-embed-text-v2:0:8k: Titan Text Embeddings V2
+- amazon.titan-embed-text-v2:0: Titan Text Embeddings V2
+- anthropic.claude-3-haiku-20240307-v1:0: Claude 3 Haiku
+- anthropic.claude-3-5-sonnet-20240620-v1:0: Claude 3.5 Sonnet
+
+To get the most up-to-date list of available models, run:
+
+```
+python bedrock_client.py list
+```
 
 ## API Cost Calculation
 
@@ -110,3 +131,41 @@ For more details on the available methods and their usage, please refer to the c
 ## Note
 
 This script is configured to use a specific AWS profile and region. Make sure to update these values in the `BedrockClient` initialization if needed.
+
+## Model Comparison Results
+
+A comparison test was run between Claude 3 Haiku (anthropic.claude-3-haiku-20240307-v1:0) and Claude 3.5 Sonnet (anthropic.claude-3-5-sonnet-20240620-v1:0). Here are the key findings:
+
+1. Tokens In: Both models used an average of 9.60 input tokens.
+
+2. Tokens Out:
+   - Claude 3 Haiku: 313.60 tokens
+   - Claude 3.5 Sonnet: 331.60 tokens
+   Claude 3.5 Sonnet generated slightly more output tokens on average.
+
+3. Total Tokens:
+   - Claude 3 Haiku: 323.20 tokens
+   - Claude 3.5 Sonnet: 341.20 tokens
+
+4. API Cost: Negligible difference for both models in this test.
+
+5. Inference Time:
+   - Claude 3 Haiku: 5.75 seconds
+   - Claude 3.5 Sonnet: 12.48 seconds
+   Claude 3 Haiku is significantly faster, taking less than half the time of Claude 3.5 Sonnet.
+
+6. Tokens Per Second:
+   - Claude 3 Haiku: 63.05 tokens/second
+   - Claude 3.5 Sonnet: 27.61 tokens/second
+   Claude 3 Haiku processes tokens more than twice as fast as Claude 3.5 Sonnet.
+
+Key Findings:
+1. Speed: Claude 3 Haiku is considerably faster than Claude 3.5 Sonnet.
+2. Output Length: Claude 3.5 Sonnet tends to produce slightly longer responses on average.
+3. Cost: No significant difference in API cost for short prompts.
+
+Recommendations:
+- Use Claude 3 Haiku for tasks requiring quick responses or real-time interactions.
+- Consider Claude 3.5 Sonnet for tasks that may benefit from more detailed responses.
+- For cost-sensitive applications with short prompts, either model is suitable.
+- Further testing with longer, more complex prompts is recommended to evaluate response quality and accuracy.

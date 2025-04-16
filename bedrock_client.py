@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import sys
+import time
 from botocore.exceptions import ClientError
 from dotenv import load_dotenv
 
@@ -122,14 +123,24 @@ class BedrockClient:
 def invoke_model(bedrock, prompt, model_id=None):
     print(f"\nInvoking model with prompt: {prompt}")
     try:
+        start_time = time.time()
         result, usage_stats = bedrock.invoke_bedrock_model(prompt, model_id)
+        end_time = time.time()
+        total_time = end_time - start_time
+        
         if result:
             print("Generated text:", result)
             print("\nUsage Statistics:")
             print(f"Tokens In: {usage_stats['tokens_in']}")
             print(f"Tokens Out: {usage_stats['tokens_out']}")
+            print(f"Total Tokens: {usage_stats['tokens_in'] + usage_stats['tokens_out']}")
             print(f"Context Window: {usage_stats['context_window']} / 200,000")
             print(f"API Cost: ${usage_stats['api_cost']:.6f}")
+            print("\nSpeed Insights:")
+            print(f"Total Inference Time: {total_time:.2f} seconds")
+            print(f"Tokens per Second: {(usage_stats['tokens_in'] + usage_stats['tokens_out']) / total_time:.2f}")
+            print(f"Input Tokens per Second: {usage_stats['tokens_in'] / total_time:.2f}")
+            print(f"Output Tokens per Second: {usage_stats['tokens_out'] / total_time:.2f}")
         else:
             print("No text generated.")
     except Exception as e:
