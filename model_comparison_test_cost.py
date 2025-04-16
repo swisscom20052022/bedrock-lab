@@ -13,8 +13,9 @@ def run_cost_comparison_tests():
     ]
 
     models = [
-        "anthropic.claude-3-haiku-20240307-v1:0",
-        "anthropic.claude-3-5-sonnet-20240620-v1:0"
+        "anthropic.claude-3-5-sonnet-20240620-v1:0",
+        "anthropic.claude-3-haiku-20240307-v1:0"
+
     ]
 
     results = []
@@ -22,6 +23,7 @@ def run_cost_comparison_tests():
     for prompt_type, prompt in test_prompts:
         row = [prompt_type]
         for model in models:
+            print(f"Testing {model} with prompt type: {prompt_type}")
             _, usage_stats = bedrock.invoke_bedrock_model(prompt, model_id=model)
             row.extend([
                 usage_stats['tokens_in'],
@@ -30,7 +32,7 @@ def run_cost_comparison_tests():
             ])
         results.append(row)
 
-    headers = ['Prompt Type'] + sum([[f'{model.split("-")[2]} In', f'{model.split("-")[2]} Out', f'{model.split("-")[2]} Cost'] for model in models], [])
+    headers = ['Prompt Type'] + sum([[f'{model.split("-")[2] if "haiku" in model else "sonnet"} In', f'{model.split("-")[2] if "haiku" in model else "sonnet"} Out', f'{model.split("-")[2] if "haiku" in model else "sonnet"} Cost'] for model in models], [])
     print(tabulate(results, headers=headers, tablefmt="grid"))
 
 if __name__ == "__main__":
