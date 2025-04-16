@@ -182,17 +182,25 @@ Recommendations:
 A more detailed cost comparison test was conducted between Claude 3 Haiku and Claude 3.5 Sonnet models using prompts of varying lengths. Here are the results:
 
 ```
-+---------------+------------+-------------+--------------+--------+---------+----------+
-| Prompt Type   |   haiku In |   haiku Out |   haiku Cost |   5 In |   5 Out |   5 Cost |
-+===============+============+=============+==============+========+=========+==========+
-| Short         |          7 |          14 |    1.925e-05 |      7 |      80 | 0.001221 |
-+---------------+------------+-------------+--------------+--------+---------+----------+
-| Medium        |         55 |          83 |    0.0001175 |     55 |      43 | 0.00081  |
-+---------------+------------+-------------+--------------+--------+---------+----------+
-| Long          |         24 |         476 |    0.000601  |     24 |     742 | 0.011202 |
-+---------------+------------+-------------+--------------+--------+---------+----------+
-| Very Long     |       1007 |         131 |    0.0004155 |   1007 |     147 | 0.005226 |
-+---------------+------------+-------------+--------------+--------+---------+----------+
+Comparison Table:
++---------------+-------------+--------------+---------------+------------+-------------+--------------+
+| Prompt Type   |   sonnet In |   sonnet Out |   sonnet Cost |   haiku In |   haiku Out |   haiku Cost |
++===============+=============+==============+===============+============+=============+==============+
+| Short         |           7 |           80 |      0.001221 |          7 |          14 |   1.925e-05  |
++---------------+-------------+--------------+---------------+------------+-------------+--------------+
+| Medium        |          55 |           45 |      0.00084  |         55 |          53 |   8e-05      |
++---------------+-------------+--------------+---------------+------------+-------------+--------------+
+| Long          |          24 |          709 |      0.010707 |         24 |         445 |   0.00056225 |
++---------------+-------------+--------------+---------------+------------+-------------+--------------+
+| Very Long     |        1007 |          192 |      0.005901 |       1007 |          92 |   0.00036675 |
++---------------+-------------+--------------+---------------+------------+-------------+--------------+
+
+Total Costs:
++---------------+-------------+--------------+---------------+------------+-------------+--------------+
+| Prompt Type   | sonnet In   | sonnet Out   |   sonnet Cost | haiku In   | haiku Out   |   haiku Cost |
++===============+=============+==============+===============+============+=============+==============+
+| Total Cost    |             |              |      0.018669 |            |             |   0.00102825 |
++---------------+-------------+--------------+---------------+------------+-------------+--------------+
 ```
 
 ### Analysis of Results
@@ -232,3 +240,26 @@ A more detailed cost comparison test was conducted between Claude 3 Haiku and Cl
 4. Consider the specific requirements of your use case when choosing between these models, balancing cost efficiency with output quality and complexity.
 
 This cost comparison provides valuable insights for decision-making when selecting between Claude 3 Haiku and Claude 3.5 Sonnet models. The choice between them should be based on the specific needs of the task, considering factors such as budget constraints, required response quality, and the complexity of the prompts being used.
+
+## Conclusion
+
+Based on the detailed cost comparison between Claude 3 Haiku and Claude 3.5 Sonnet, we can conclude:
+
+1. Cost Efficiency: Claude 3 Haiku is significantly more cost-effective across all prompt types, with the cost difference ranging from 6.9 to 63 times less expensive than Sonnet.
+
+2. Use Case Considerations:
+   - For applications prioritizing speed and cost-efficiency, especially those dealing with shorter prompts or requiring quick responses, Claude 3 Haiku is the clear choice.
+   - For tasks that require more detailed, nuanced, or complex responses, the additional cost of Claude 3.5 Sonnet may be justified by its potentially superior output quality.
+
+3. Scalability: The cost difference becomes more pronounced with larger volumes of requests, making Haiku particularly attractive for high-throughput applications.
+
+4. Output Length: Sonnet tends to generate longer responses, which may be beneficial for tasks requiring more comprehensive outputs but comes at a higher cost.
+
+5. Decision Framework: When choosing between these models, consider:
+   - Budget constraints
+   - Required response quality and complexity
+   - Speed requirements
+   - Volume of requests
+   - Specific task requirements (e.g., nuance, creativity, analytical depth)
+
+In summary, while Claude 3.5 Sonnet offers advanced capabilities, Claude 3 Haiku provides a more balanced option for many applications, offering significant cost savings without compromising too much on quality for most general use cases. The choice between the two should be based on a careful evaluation of your specific needs and constraints.
